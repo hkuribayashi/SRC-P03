@@ -1,9 +1,6 @@
-import os
-import socket
 from scapy.all import conf, send
 from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.inet import UDP, IP
-from scapy.sendrecv import sr1
 
 conf.use_pcap = True
 
@@ -23,7 +20,7 @@ dns_packet = dns_packet / DNSQR(qname="www.example.com")
 final_packet = ip_packet / udp_packet / dns_packet
 
 # Send the packet using the sr1 method of scapy, which sends the packet and receives the response
-response = send(final_packet)
+response = send(final_packet, count=5, return_packets=False)
 
 # Display the response packet
-response.show()
+print(response)
