@@ -32,8 +32,10 @@ def geraConsultas(n_consultas, dest, dom, orig=None):
 
 
 if __name__ == '__main__':
-    dominio = sys.argv[1]
-    destino = sys.argv[2]
-    origem = sys.argv[3]
-    iteracoes = int(sys.argv[4])
-    geraConsultas(iteracoes, destino, dominio, origem)
+    if len(sys.argv) == 5:
+        dominio = sys.argv[1]
+        destino = sys.argv[2]
+        origem = sys.argv[3]
+        iteracoes = int(sys.argv[4])
+        geraConsultas(iteracoes, destino, dominio, origem)
+    else: print("Uso: $ sudo python main.py <domain> <dst_address> <src_address> <iterations>")
