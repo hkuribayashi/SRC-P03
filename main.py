@@ -4,13 +4,14 @@ from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.inet import UDP, IP
 
 
-def geraConsultas(n_consultas, dest, dom, orig=None):
+def geraConsultas(n_consultas, dest, dom, orig, tipo):
     conf.use_pcap = True
 
     # Create an IP packet object with source IP as 4.4.4.4 and destination IP as 8.8.8.8
     if orig is not None:
         ip_packet = IP(src=orig, dst=dest)
-    else: ip_packet = IP(dst=dest)
+    else:
+        ip_packet = IP(dst=dest)
 
     # Create a UDP packet object with source port as a random number and destination port as 53 (DNS port)
     udp_packet = UDP(sport=12345, dport=53)
@@ -19,7 +20,7 @@ def geraConsultas(n_consultas, dest, dom, orig=None):
     dns_packet = DNS(opcode=0, rd=1)
 
     # Add a DNS query record (DNSQR) to the DNS packet object
-    dns_packet = dns_packet / DNSQR(qname=dom, qtype=9)
+    dns_packet = dns_packet / DNSQR(qname=dom, qtype=tipo)
 
     # Combine the IP, UDP and DNS packets to form the final packet
     final_packet = ip_packet / udp_packet / dns_packet
@@ -31,11 +32,18 @@ def geraConsultas(n_consultas, dest, dom, orig=None):
     print(response)
 
 
+def getQueryType(tconsulta):
+    query_type = ["ANY", "A", "AAAA", "CNAME", "MX", "NS", "PTR", "CERT", "SRV", "TXT", "SOA"]
+    return query_type.index(tconsulta)
+
+
 if __name__ == '__main__':
-    if len(sys.argv) == 5:
+    if len(sys.argv) == 6:
         dominio = sys.argv[1]
         destino = sys.argv[2]
         origem = sys.argv[3]
-        iteracoes = int(sys.argv[4])
-        geraConsultas(iteracoes, destino, dominio, origem)
-    else: print("Uso: $ sudo python main.py <domain> <dst_address> <src_address> <iterations>")
+        tipo_consulta = getQueryType(sys.argv[4])
+        iteracoes = int(sys.argv[5])
+        geraConsultas(iteracoes, destino, dominio, origem, tipo_consulta)
+    else:
+        print("Uso: $ sudo python main.py <domain> <dst_address> <src_address> <tipo_consulta> <iterations>")
